@@ -1,0 +1,31 @@
+[Unit]
+Description=Prometheus Time Series Collection and Processing Server
+Documentation=https://prometheus.io/docs/introduction/overview/
+After=network.target
+
+[Service]
+User=prometheus
+Group=prometheus
+Type=simple
+ExecStart=/usr/local/bin/prometheus \
+    --config.file=/etc/prometheus/prometheus.yml \
+    --storage.tsdb.path=/var/lib/prometheus/ \
+    --web.console.templates=/etc/prometheus/consoles \
+    --web.console.libraries=/etc/prometheus/console_libraries \
+    --web.listen-address=:9090 \
+    --storage.tsdb.retention.time=15d
+
+# Защита от вылетов
+Restart=always
+RestartSec=10
+
+# Лимиты
+LimitNOFILE=65536
+MemoryLimit=2G
+
+# Логирование
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
